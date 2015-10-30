@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'kgitlab/cli'
+Kgitlab::CLI.start

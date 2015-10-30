@@ -1,0 +1,16 @@
+---
+# The port to start a web server on to listen for system hook events
+port: 8000
+
+# The API endpoint for your GitLab installation
+api_url: 'https://gitlab.example.com/api/v3'
+
+# The API token for a user with admin rights
+api_token: 'a-long-random-string'
+
+# GitLab's shell user, usually 'git'
+git_user: 'git'
+
+# The Kerberos realm to append to GitLab usernames for Kerberos
+# authentication
+realm: 'EXAMPLE.COM'
