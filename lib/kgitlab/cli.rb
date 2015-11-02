@@ -13,7 +13,8 @@ class Kgitlab::CLI < Thor
   end
 
   desc 'exec-shell', 'Execute the GitLab shell based on Kerberos identity'
+  option :command, :type => :string, :desc => 'A command to execute in the shell', :aliases => '-c'
   def exec_shell
-    Kgitlab::exec_shell
+    Kgitlab::exec_shell(options['command'])
   end
 end

@@ -12,19 +12,24 @@ require 'gitlab'
 class Kgitlab
   # If the user who runs this function has logged in with kerberos and
   # the user has a dummy key created by this application, then execute
-  # the GitLab shell.
+  # the GitLab shell, otherwise start a normal shell (which is almost
+  # always instructed to run 'gitlab-shell' by the command listed in
+  # the SSH authorized_keys file).
   #
-  # This is meant to be performed in the git user's shell profile.
-  def self.exec_shell
-    principal = $1 if `klist` =~ /[Pp]rincipal: (.+)/
+  # @param command [String] a command to execute in the resulting shell
+  def self.exec_shell(command = nil)
+    principal = $1 if `klist 2>&1` =~ /[Pp]rincipal: (.+)/
     if principal
       File.open("#{ENV['HOME']}/.k5keys") do |file|
         key = $1 if file.read =~ /^#{principal} (key-\d+)$/
         if key
+          ENV['SSH_ORIGINAL_COMMAND'] = command if command
           exec "/opt/gitlab/embedded/service/gitlab-shell/bin/gitlab-shell #{key}"
         end
       end
     end
+    exec '/bin/sh', '-c', command if command
+    exec '/bin/sh'
   end
 
   # @param config_file [String] the path to a YAML configuration file

@@ -43,13 +43,22 @@ You may need to ensure that the GitLab shell user's `.k5login` file has the righ
 
 ### Shell Executor
 
-Set the GitLab shell user's `.profile` to the following to ensure they cannot escape the GitLab shell:
+Create a wrapper, for example in `/usr/bin/kgitlabsh`, that contains:
 
 ```sh
-exec kgitlab exec-shell
+#!/bin/bash
+exec /path/to/kgitlab exec-shell "$@"
 ```
 
-Then, if the user logs in with valid Kerberos credentials, and is listed in the GitLab shell user's `.k5login`, and has an associated dummy SSH key as managed by kgitlab, then they will be put into the GitLab shell for doing all the pulling and pushing that they would be able to do with their normal SSH key.  Otherwise the program exits and the user is logged out.
+Then change the GitLab shell user's shell to `/usr/bin/kgitlabsh` by adding:
+
+```ruby
+user['shell'] = "/usr/bin/kgitlabsh"
+```
+
+to `/etc/gitlab/gitlab.rb` and running `gitlab-ctl reconfigure`.
+
+Then, when the user logs in with valid Kerberos credentials, and is listed in the GitLab shell user's `.k5login`, and has an associated dummy SSH key as managed by kgitlab, they will be put into the GitLab shell for doing all the pulling and pushing that they would be able to do with their normal SSH key.  The ability to also authenticate with a normal SSH key is preserved.
 
 You may also want to add the following to your system `sshd_config`:
 
