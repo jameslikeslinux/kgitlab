@@ -1,0 +1,9 @@
+[Unit]
+Description=GitLab System Hook Listener to Enable Kerberos
+After=network.target
+
+[Service]
+ExecStart=@bindir@/kgitlab server --config @sysconfdir@/kgitlab/config.yaml
+
+[Install]
+WantedBy=multi-user.target
