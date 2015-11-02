@@ -43,7 +43,15 @@ You may need to ensure that the GitLab shell user's `.k5login` file has the righ
 
 ### Shell Executor
 
-Set the SSH configuration for the git user to the following to ensure they cannot escape the GitLab shell:
+Set the GitLab shell user's `.profile` to the following to ensure they cannot escape the GitLab shell:
+
+```sh
+exec kgitlab exec-shell
+```
+
+Then, if the user logs in with valid Kerberos credentials, and is listed in the GitLab shell user's `.k5login`, and has an associated dummy SSH key as managed by kgitlab, then they will be put into the GitLab shell for doing all the pulling and pushing that they would be able to do with their normal SSH key.  Otherwise the program exits and the user is logged out.
+
+You may also want to add the following to your system `sshd_config`:
 
 ```
 Match User git
@@ -52,7 +60,6 @@ Match User git
     X11Forwarding no
     AllowAgentForwarding no
     PermitTTY no
-    ForceCommand /path/to/kgitlab exec-shell
 ```
 
-Then, if the user logs in with valid Kerberos credentials, and is listed in the GitLab shell user's `.k5login`, and has an associated dummy SSH key as managed by kgitlab, then they will be put into the GitLab shell for doing all the pulling and pushing that they would be able to do with their normal SSH key.  Otherwise the program exits and the user is logged out.
+to match the security precautions taken by GitLab's normal SSH authentication scheme.
